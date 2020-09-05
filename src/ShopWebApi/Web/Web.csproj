@@ -1,0 +1,67 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <Folder Include="Configuration\" />
+    <Folder Include="Filters\" />
+    <Folder Include="Endpoints\Authorization\" />
+    <Folder Include="Endpoints\" />
+    <Folder Include="Endpoints\ItemEndpoints\" />
+    <Folder Include="Endpoints\ItemEndpoints\CreateItem\" />
+    <Folder Include="Endpoints\ItemEndpoints\GetItemById\" />
+    <Folder Include="Endpoints\ItemEndpoints\UpdateItem\" />
+    <Folder Include="Endpoints\ItemEndpoints\DeleteItem\" />
+    <Folder Include="Endpoints\ItemEndpoints\GetItemList\" />
+    <Folder Include="Endpoints\OrderEndpoints\" />
+    <Folder Include="Endpoints\OrderEndpoints\CreateOrder\" />
+    <Folder Include="Endpoints\OrderEndpoints\DeleteOrder\" />
+    <Folder Include="Endpoints\OrderEndpoints\GetOrderById\" />
+    <Folder Include="Endpoints\OrderEndpoints\GetOrderList\" />
+    <Folder Include="Endpoints\OrderEndpoints\GetOrdersByCustomerId\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Infrastructure\Infrastructure.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ApplicationCore\ApplicationCore.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.7" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.7" />
+        
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.5.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.5.0" />
+    <PackageReference Include="Ardalis.ApiEndpoints" Version="2.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.7">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="AutoMapper" Version="10.0.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="5.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Authorization\ClaimValue.cs" />
+    <Compile Remove="Authorization\UserInfo.cs" />
+    <Compile Remove="Endpoints\ItemEndpoints\Create\CreateHandler.cs" />
+    <Compile Remove="Endpoints\ItemEndpoints\Delete\CreateHandler.cs" />
+    <Compile Remove="Endpoints\ItemEndpoints\Delete\CreateItemRequest.cs" />
+    <Compile Remove="Endpoints\ItemEndpoints\Delete\CreateItemResponse.cs" />
+    <Compile Remove="Endpoints\ItemEndpoints\Update\DeleteItemHandler.cs" />
+    <Compile Remove="Endpoints\ItemEndpoints\Update\DeleteItemResponse.cs" />
+    <Compile Remove="Endpoints\ItemEndpoints\Update\DeleteRequest.cs" />
+    <Compile Remove="Endpoints\ItemEndpoints\GetItemList\GetItemByIdHandler.cs" />
+    <Compile Remove="Endpoints\ItemEndpoints\GetItemList\GetItemByIdRequest.cs" />
+    <Compile Remove="Endpoints\ItemEndpoints\GetItemList\GetItemByIdResponse.cs" />
+  </ItemGroup>
+</Project>
