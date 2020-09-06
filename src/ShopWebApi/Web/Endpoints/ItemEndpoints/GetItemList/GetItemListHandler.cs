@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,36 +34,11 @@ namespace Web.Endpoints
         {
             var response = new GetItemListResponse(request.CorrelationId());
 
-            int totalItems = 0;
-            var items = new List<ShopItem>().AsReadOnly() as IReadOnlyList<ShopItem>;
+            var filterSpec = GetFilterSpecification(request);
+            var pagedSpec = GetFilterPaginatedSpecification(request);
 
-            if (request.PriceSpecification)
-            {
-                if (request.PriceFrom > request.PriceTo)
-                    return BadRequest("Price from can't be less than Price to");
-
-                var filterSpec = new ItemFilterSpecification(request.PriceFrom, request.PriceTo);
-                totalItems = await _itemRepository.CountAsync(filterSpec);
-
-                var pagedSpec = new ItemFilterPaginatedSpecification(
-                    request.ItemsPerPage * (request.PageIndex - 1),
-                    request.ItemsPerPage,
-                    request.PriceFrom,
-                    request.PriceTo);
-
-                items = await _itemRepository.ListAsync(pagedSpec);
-            }
-            else
-            {
-                var filterSpec = new ItemFilterSpecification();
-                totalItems = await _itemRepository.CountAsync(filterSpec);
-
-                var pagedSpec = new ItemFilterPaginatedSpecification(
-                    request.ItemsPerPage * (request.PageIndex - 1),
-                    request.ItemsPerPage);
-
-                items = await _itemRepository.ListAsync(pagedSpec);
-            }
+            var totalItems = await _itemRepository.CountAsync(filterSpec);
+            var items = await _itemRepository.ListAsync(pagedSpec);
 
             response.Items.AddRange(items.Select(_mapper.Map<ItemDto>));
 
@@ -72,5 +46,20 @@ namespace Web.Endpoints
 
             return Ok(response);
         }
+
+        private ItemFilterSpecification GetFilterSpecification(GetItemListRequest request)
+            =>
+                request.PriceSpecification ? new ItemFilterSpecification(request.PriceFrom, request.PriceTo) : new ItemFilterSpecification();
+
+        private ItemFilterPaginatedSpecification GetFilterPaginatedSpecification(GetItemListRequest request)
+            =>
+                request.PriceSpecification ? new ItemFilterPaginatedSpecification(
+                    request.ItemsPerPage * (request.PageIndex - 1),
+                    request.ItemsPerPage,
+                    request.PriceFrom,
+                    request.PriceTo) :
+                new ItemFilterPaginatedSpecification(
+                    request.ItemsPerPage * (request.PageIndex - 1),
+                    request.ItemsPerPage);
     }
 }

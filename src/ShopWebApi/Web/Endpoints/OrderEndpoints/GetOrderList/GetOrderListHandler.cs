@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ApplicationCore.Entities;
 using ApplicationCore.Interfaces;
 using ApplicationCore.Specifications;
 using Ardalis.ApiEndpoints;
@@ -38,55 +36,14 @@ namespace Web.Endpoints
         {
             var response = new GetOrderListResponse(request.CorrelationId());
 
-            int totalOrders = 0;
-            var orders = new List<Order>().AsReadOnly() as IReadOnlyList<Order>;
+            var filterSpec = GetFilterSpecification(request);
+            var pagedSpec = GetFilterPaginatedSpecification(request);
 
-            // TODO : Need refactor this IFs statements.
-            if (request.DateSpecification == DateSpecificationEnum.FromAndToDate)
-            {
-                if (request.DateFrom > request.DateTo)
-                    return BadRequest("Date from can't be less than Date to");
-
-                var filterSpec = new OrderFilterSpecification(request.DateFrom, request.DateTo);
-                totalOrders = await _orderRepository.CountAsync(filterSpec);
-
-                var pagedSpec = new OrderFilterPaginatedSpecification(
-                    request.OrdersPerPage * (request.PageIndex - 1),
-                    request.OrdersPerPage,
-                    request.DateFrom,
-                    request.DateTo);
-
-                orders = await _orderRepository.ListWithItemsAsync(pagedSpec);
-            }
-            else if (request.DateSpecification == DateSpecificationEnum.OnlyFromDate)
-            {
-                if (request.DateFrom > DateTimeOffset.Now)
-                    return BadRequest("Date from can't be less than date now");
-
-                var filterSpec = new OrderFilterSpecification(request.DateFrom);
-                totalOrders = await _orderRepository.CountAsync(filterSpec);
-
-                var pagedSpec = new OrderFilterPaginatedSpecification(
-                    request.OrdersPerPage * (request.PageIndex - 1),
-                    request.OrdersPerPage,
-                    request.DateFrom);
-
-                orders = await _orderRepository.ListWithItemsAsync(pagedSpec);
-            }
-            else
-            {
-                var filterSpec = new OrderFilterSpecification();
-                totalOrders = await _orderRepository.CountAsync(filterSpec);
-
-                var pagedSpec = new OrderFilterPaginatedSpecification(
-                    request.OrdersPerPage * (request.PageIndex - 1),
-                    request.OrdersPerPage);
-
-                orders = await _orderRepository.ListWithItemsAsync(pagedSpec);
-            }
+            var totalOrders = await _orderRepository.CountAsync(filterSpec);
+            var orders = await _orderRepository.ListWithItemsAsync(pagedSpec);
 
             response.Orders.AddRange(orders.Select(_mapper.Map<OrderDto>));
-            foreach(var orderResponse in response.Orders)
+            foreach (var orderResponse in response.Orders)
             {
                 var order = orders.FirstOrDefault(o => o.CustomerId == orderResponse.CustomerUsername);
 
@@ -106,6 +63,26 @@ namespace Web.Endpoints
             response.PageCount = int.Parse(Math.Ceiling((decimal)totalOrders / request.OrdersPerPage).ToString());
 
             return Ok(response);
+        }
+
+        private OrderFilterSpecification GetFilterSpecification(GetOrderListRequest request)
+        {
+            if (request.DateSpecification == DateSpecificationEnum.FromAndToDate)
+                return new OrderFilterSpecification(request.DateFrom, request.DateTo);
+            else if (request.DateSpecification == DateSpecificationEnum.OnlyFromDate)
+                return new OrderFilterSpecification(request.DateFrom);
+            else
+                return new OrderFilterSpecification();
+        }
+
+        private OrderFilterPaginatedSpecification GetFilterPaginatedSpecification(GetOrderListRequest request)
+        {
+            if (request.DateSpecification == DateSpecificationEnum.FromAndToDate)
+                return new OrderFilterPaginatedSpecification(request.OrdersPerPage * (request.PageIndex - 1), request.OrdersPerPage, request.DateFrom, request.DateTo);
+            else if (request.DateSpecification == DateSpecificationEnum.OnlyFromDate)
+                return new OrderFilterPaginatedSpecification(request.OrdersPerPage * (request.PageIndex - 1), request.OrdersPerPage, request.DateFrom);
+            else
+                return new OrderFilterPaginatedSpecification(request.OrdersPerPage * (request.PageIndex - 1), request.OrdersPerPage);
         }
     }
 }
