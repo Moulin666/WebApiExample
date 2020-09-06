@@ -5,9 +5,7 @@ using ApplicationCore.Interfaces;
 using AutoMapper;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using Moq;
 using UnitTests.Builders;
-using Web;
 using Web.Endpoints;
 using Xunit;
 

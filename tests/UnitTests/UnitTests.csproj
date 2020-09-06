@@ -20,6 +20,7 @@
     <Folder Include="ApplicationCore\" />
     <Folder Include="Builders\" />
     <Folder Include="OrderTests\" />
+    <Folder Include="ApplicationCore\Entities\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\ApplicationCore\ApplicationCore.csproj" />
